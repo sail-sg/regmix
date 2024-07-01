@@ -18,12 +18,32 @@ MAXIMUM_USAGE = 15
 # Assume that we have 512 x 1000 samples, 2e-4 will have 10 samples which have the statistical significance
 MINIMUM = 2e-4
 
-def generate_train_group(groups, weights, sample_folder=None):
-    assert len(groups) == len(weights)
-    if sample_folder is None:
-        output_group = [f"  {group}: {num}" for group, num in zip(groups, weights)]
+def generate_train_group(groups, weights, sample_folder=None, precision=5):
+    """
+    Generate a formatted string of groups and their corresponding weights.
+
+    Args:
+    groups (list): List of group names.
+    weights (list): List of corresponding weights.
+    sample_folder (str, optional): If provided, will be included in the group name.
+    prefix (str, optional): Prefix to add before each group name. Defaults to 'train'.
+    precision (int, optional): Number of decimal places for rounding weights. Defaults to 4.
+
+    Returns:
+    str: Formatted string of groups and weights.
+    """
+    assert len(groups) == len(weights), "Length of groups and weights must be equal"
+    
+    def format_weight(weight):
+        return f"{weight:.{precision}f}".rstrip('0').rstrip('.')
+    
+    if sample_folder:
+        output_group = [f"  train_{sample_folder}_{group}: {format_weight(num)}" 
+                        for group, num in zip(groups, weights)]
     else:
-        output_group = [f"  train_{sample_folder}_{group}: {num}" for group, num in zip(groups, weights)]
+        output_group = [f"  train_{group}: {format_weight(num)}" 
+                        for group, num in zip(groups, weights)]
+    
     return "\n".join(output_group)
 
 def generate_valid_group(groups, sample_folder=None):
@@ -85,7 +105,9 @@ def generate_weights_exponential(prior_dist,
             continue
         # post normalization, set zero for the number less than minimum_number
         samples = np.where(samples < minimum_number, 0.0, samples)
+        # round samples into the same scale of minimum_number
         samples = samples / np.sum(samples, axis=1).reshape(-1, 1)
+        samples = np.round(samples / minimum_number) * minimum_number
         # add the samples to the final_samples
         final_samples.append(samples[0])
 
@@ -166,7 +188,7 @@ def generate_config_from_prior(output_paths, prior_yaml):
 
 if __name__ == "__main__":
     output_paths = []
-    for i in range(1, 1001):
+    for i in range(1, 513):
         output_paths.append(f"config_1m/n{i}.yaml")
         
     generate_config_from_prior(output_paths,
