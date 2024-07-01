@@ -1,0 +1,21 @@
+train:
+  train_the_pile_unzip_arxiv: 0.1052
+  train_the_pile_unzip_freelaw: 0.0386
+  train_the_pile_unzip_nih_exporter: 0.0052
+  train_the_pile_unzip_pubmed_central: 0.1071
+  train_the_pile_unzip_wikipedia_en: 0.0919
+  train_the_pile_unzip_dm_mathematics: 0.0198
+  train_the_pile_unzip_github: 0.0427
+  train_the_pile_unzip_philpapers: 0.0027
+  train_the_pile_unzip_stackexchange: 0.0929
+  train_the_pile_unzip_enron_emails: 0.0030
+  train_the_pile_unzip_gutenberg_pg_19: 0.0199
+  train_the_pile_unzip_pile_cc: 0.1121
+  train_the_pile_unzip_ubuntu_irc: 0.0074
+  train_the_pile_unzip_europarl: 0.0043
+  train_the_pile_unzip_hackernews: 0.0075
+  train_the_pile_unzip_pubmed_abstracts: 0.0845
+  train_the_pile_unzip_uspto_backgrounds: 0.0420
+valid:
+  valid_the_pile_unzip_pile_cc: 1.0
+]model_name: tinyllama_1_1b
