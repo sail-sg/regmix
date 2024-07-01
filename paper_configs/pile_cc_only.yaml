@@ -1,0 +1,5 @@
+train:
+  train_the_pile_unzip_pile_cc: 1.0
+valid:
+  valid_the_pile_unzip_pile_cc: 1.0
+model_name: tinyllama_1_1b

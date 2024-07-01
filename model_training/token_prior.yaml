@@ -1,0 +1,36 @@
+train:
+  train_the_pile_unzip_arxiv: 0.113285273
+  train_the_pile_unzip_freelaw: 0.079608651
+  train_the_pile_unzip_nih_exporter: 0.003913491
+  train_the_pile_unzip_pubmed_central: 0.185375901
+  train_the_pile_unzip_wikipedia_en: 0.051081359
+  train_the_pile_unzip_dm_mathematics: 0.015962925
+  train_the_pile_unzip_github: 0.101750772
+  train_the_pile_unzip_philpapers: 0.003707518
+  train_the_pile_unzip_stackexchange: 0.066529351
+  train_the_pile_unzip_enron_emails: 0.001750772
+  train_the_pile_unzip_gutenberg_pg_19: 0.027085479
+  train_the_pile_unzip_pile_cc: 0.236869207
+  train_the_pile_unzip_ubuntu_irc: 0.01184346
+  train_the_pile_unzip_europarl: 0.007929969
+  train_the_pile_unzip_hackernews: 0.008032956
+  train_the_pile_unzip_pubmed_abstracts: 0.038825953
+  train_the_pile_unzip_uspto_backgrounds: 0.046446962
+valid:
+  valid_the_pile_unzip_arxiv: 1.0
+  valid_the_pile_unzip_dm_mathematics: 1.0
+  valid_the_pile_unzip_enron_emails: 1.0
+  valid_the_pile_unzip_europarl: 1.0
+  valid_the_pile_unzip_freelaw: 1.0
+  valid_the_pile_unzip_github: 1.0
+  valid_the_pile_unzip_gutenberg_pg_19: 1.0
+  valid_the_pile_unzip_hackernews: 1.0
+  valid_the_pile_unzip_nih_exporter: 1.0
+  valid_the_pile_unzip_philpapers: 1.0
+  valid_the_pile_unzip_pile_cc: 1.0
+  valid_the_pile_unzip_pubmed_abstracts: 1.0
+  valid_the_pile_unzip_pubmed_central: 1.0
+  valid_the_pile_unzip_stackexchange: 1.0
+  valid_the_pile_unzip_ubuntu_irc: 1.0
+  valid_the_pile_unzip_uspto_backgrounds: 1.0
+  valid_the_pile_unzip_wikipedia_en: 1.0
