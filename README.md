@@ -3,7 +3,7 @@
 <p align='left' style="text-align:left;font-size:1.2em;">
 <b>
     [<a href="https://huggingface.co/spaces/sail/RegMix" target="_blank" style="text-decoration: none;">Demo</a>] |
-    [<a href="" target="_blank" style="text-decoration: none;">arXiv</a>]</b>
+    [<a href="https://arxiv.org/abs/2407.01492" target="_blank" style="text-decoration: none;">arXiv</a>]</b>
 </p>
 
 ----------------------------------------------------------------------
