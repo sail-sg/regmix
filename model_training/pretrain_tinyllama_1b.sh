@@ -6,7 +6,7 @@ export MODEL_NAME=tinyllama_1B_n$1
 export WANDB_NAME=$MODEL_NAME
 export NUMBER_OF_GPUS=8
 # you can specify the config name here or pass it as an argument $1
-export CONFIG_NAME=regmix
+export CONFIG_NAME=$1
 
 lightning run model \
     --node-rank=0  \

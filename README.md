@@ -4,9 +4,9 @@ The official repo of the [RegMix](https://huggingface.co/papers/2407.01492) pape
 
 ### Overview
 
-![RegMix](misc/method_figure.png)
-
 RegMix is a method for automatically identifying an effective data mixture for training large language models (LLMs). The key idea is to formulate the data mixture selection as a **regression task**, where a set of small "proxy" models are trained on diverse data mixtures, and their performance is used to fit a regression model. This regression model is then used to predict and simulate the optimal data mixture, which is then used to train a large-scale LLM.
+
+![RegMix](misc/method_figure.png)
 
 ## Quickstart
 
