@@ -244,7 +244,7 @@ def generate_config_from_prior(output_paths, prior_config):
             # constant learning rate for the small model
             content += "\n" + "learning_rate: 0.0004"
             content += "\n" + "min_lr: 0.0004"
-            # the warmup step is 50
+            # the warmup step is 100
             content += "\n" + "warmup_steps: 100"
             f.write(content)
 
