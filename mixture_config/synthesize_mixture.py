@@ -1,6 +1,8 @@
 import numpy as np
 import random
 import yaml
+import argparse
+import os
 
 SEED = 42
 random.seed(SEED)
@@ -265,9 +267,22 @@ def sort_and_deduplicate(data, threshold=1e-5):
     return result
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--output_folder", type=str, default="config_1m")
+    parser.add_argument("--num_configs", type=int, default=512)
+    
+    args = parser.parse_args()
+    output_folder = args.output_folder
+    num_samples = args.num_configs
+    
+    # if not exist, create the folder
+    if not os.path.exists(output_folder):
+        os.makedirs(output_folder)
+    
     output_paths = []
-    for i in range(1, 513):
-        output_paths.append(f"config_1m/n{i}.yaml")
+    for i in range(1, num_samples + 1):
+        output_paths.append(f"{output_folder}/n{i}.yaml")
+
     generate_config_from_prior(output_paths,
                                prior_config=get_token_distribution())
     

@@ -67,6 +67,6 @@ def plot_weight_distributions(train_weight_dict):
 
 if __name__ == "__main__":
     parser = ArgumentParser()
-    parser.add_argument("--folder", type=str, default="config_1m", help="Folder path containing YAML files")
-    folder_path = parser.parse_args().folder
+    parser.add_argument("--config_folder", type=str, default="config_1m", help="Folder path containing YAML files")
+    folder_path = parser.parse_args().config_folder
     visualize_yaml_points(folder_path)

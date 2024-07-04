@@ -50,6 +50,7 @@ Finally, install the remaining required packages:
 pip install -r requirements.txt tokenizers sentencepiece transformers wandb datasets huggingface_hub
 ```
 
+> [!NOTE]
 > The build process for Flash-Attention may take 5 minutes or more.
 > If you encounter any issues, ensure your CUDA installation is correct and compatible with the PyTorch version you're installing.
 > It's recommended to use a virtual environment for this installation to avoid conflicts with other Python packages.
