@@ -4,7 +4,13 @@ This directory contains scripts for synthesizing and visualizing data mixtures u
 
 ### synthesize_mixture.py
 
-This script is used to synthesize data mixtures for training the proxy models (1M models in the paper). By default, it generates 512 configurations following the settings specified within the script. The configurations are saved in the `config_1m` directory.
+This script is used to synthesize data mixtures for training the proxy models (1M models in the paper). You can use the following command to generate the data mixtures:
+
+```bash
+python synthesize_mixture.py --num_configs 512 --output_folder /path/to/configs
+```
+
+By default, it generates 512 configurations following the settings specified within the script. The configurations are saved in the `config_1m` directory.
 
 ### visualize_mixture.py
 
@@ -13,7 +19,7 @@ This script is used to visualize the data mixtures generated for training the pr
 If you want to visualize a different folder, you can use the following command:
 
 ```shell
-python visualize_mixture.py --folder <path_to_config_dir>
+python visualize_mixture.py --config_folder <path_to_config_dir>
 ```
 
 Note that the folder must contain several yaml files which starts from `n` and ends with `.yaml`.

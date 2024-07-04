@@ -56,13 +56,15 @@ An example dataset organization folder structure is as follows:
 │   ├── domain2_1.jsonl
 │   ├── ...
 ├── valid
-│   ├── domain1.jsonl
-│   ├── domain2.jsonl
+│   ├── domain1_0.jsonl
+│   ├── domain2_0.jsonl
 ```
 
+> [!TIP]
+> We use prefix based matching to identify files from the same domain. Therefore, please make sure the prefix is unique for each domain. And we recommend using the `_` after the prefix to avoid one prefix becoming a substring of another prefix.
 > Please avoid making each jsonl file too large, as it may cause long time during the preprocessing.
 
-You can also find the [regmix-data-sample](https://huggingface.co/datasets/sail/regmix) for your reference.
+You can also find the [regmix-data-sample](https://huggingface.co/datasets/sail/regmix-data-sample) for your reference.
 
 ### 2. Generate Mixture Configurations
 
@@ -72,13 +74,53 @@ Use the tools in the `mixture_config/` directory to:
 
 Before generating configurations, ensure you have changed the function `get_token_distribution` in `synthesize_mixture.py` to match your dataset's domain names and token distributions.
 
+For example, let's assume you have three domains: `domain1`, `domain2`, and `domain3`, and your `DATASET_SHORT_NAME` defined in `model_training/preprocess/run_preprocess.sh` is `your_dataset`.
+
+To accommodate these domains, you should modify the `get_token_distribution` function as follows:
+
+```python
+def get_token_distribution():
+    # This example uses an equal distribution for each domain.
+    # Adjust these values if certain domains have significant more available tokens.
+    train = {
+        "train_your_dataset_domain1": 0.33,
+        "train_your_dataset_domain2": 0.33,
+        "train_your_dataset_domain3": 0.34,
+    }
+    # The validation set can be omitted if not needed for 1M model training
+    valid = {
+        "valid_your_dataset_domain1": 1.0,
+        "valid_your_dataset_domain2": 1.0,
+        "valid_your_dataset_domain3": 1.0,
+    }
+    return {"train": train, "valid": valid}
+```
+
+Next, generate the mixture configurations:
+
+```bash
+python synthesize_mixture.py --num_configs 512 --output_folder /path/to/configs
+```
+
+> [!TIP]
+> The number of configurations typically has the most significant impact on the regression model's accuracy. In our experiments, we utilized 512 configurations for 17 domains. If you're working with fewer domains, you may be able to achieve comparable results with a reduced number of configurations. However, if you have access to additional resources, consider training more proxy models to enhance the regression model's accuracy. This approach is particularly beneficial when dealing with a large number of domains.
+> You can also try from a small number of configurations to see if the regression model can predict the unseen data mixture well.
+
+Finally, visualize the generated mixtures to understand their composition:
+
+```bash
+python visualize_mixture.py --config_folder /path/to/configs
+```
 
 ### 3. Train Proxy Models
 
-Utilize the `model_training/` scripts to train small "proxy" models on your generated mixtures:
+Utilize the `model_training/` scripts to train small "proxy" models on your generated mixtures. Remember to modify the config folder path in the `pretrain_tinyllama_1m.sh` script to match your generated configurations.
 
 ```bash
-python model_training/train_proxy.py --config_path /path/to/configs --model_size 1M
+cd model_training
+for i in {1..512}; do
+    ./pretrain_tinyllama_1m.sh $i
+done
 ```
 
 ### 4. Fit the Regression Model
@@ -136,7 +178,6 @@ cd model_training
 
 - **Data Diversity**: Ensure your initial dataset covers a wide range of domains.
 - **Proxy Model Size**: While we use 1M parameter models, you might need to adjust based on your computational resources and dataset size.
-- **The Number of Runs**: If you have the resources, consider training more proxy models to improve the regression model's accuracy, especially when you have a large number of domains.
 - **Evaluation**: Choosing the correct target is crucial for the generic downstream performance improvement. You may want to use the loss on a high-quality and diverse validation dataset like Pile-CC. We also recommend using the awesome [paloma evaluation suite](https://huggingface.co/datasets/allenai/paloma) from AI2 for evaluation.
 
 ### Customization Options
