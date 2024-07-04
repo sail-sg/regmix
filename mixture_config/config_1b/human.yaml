@@ -18,4 +18,4 @@ train:
   train_the_pile_uspto_backgrounds: 0.0420
 valid:
   valid_the_pile_pile_cc: 1.0
-]model_name: tinyllama_1_1b
+model_name: tinyllama_1_1b
