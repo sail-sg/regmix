@@ -167,12 +167,14 @@ valid:
 model_name: tinyllama_1_1b
 ```
 
-Finally, use the predicted optimal mixture to train your model via `optimal_mixture.yaml`:
+Finally, use the predicted optimal mixture to train your model. Put your `optimal_mixture.yaml` under the folder `mixture_config/config_1b` and run the following script:
 
 ```bash
 cd model_training
 ./pretrain_tinyllama_1b.sh optimal_mixture
 ```
+
+You get the final model trained with the optimal mixture!
 
 ### Tips for Success
 
@@ -191,9 +193,50 @@ Remember, the key to RegMix's success is in capturing the relationship between d
 
 ## 📦 Data and Model Release
 
-We've made our data and trained models available on HuggingFace! Check out the following table for links:
+We've made our data and trained models available on HuggingFace!
 
-[Table to be added here]
+### Model
+
+Below are the full models, you can load each model with the following code:
+
+```python
+from transformers import AutoModel, AutoTokenizer
+
+model_name, revision = "sail/data-mixture-random-1b", "model-index-1"
+model = AutoModel.from_pretrained(model_name, revision=revision)
+tokenizer = AutoTokenizer.from_pretrained(model_name, revision=revision)
+```
+
+And the detailed name and revision of each model is as follows:
+
+| Model Name | Revisions | Description | Link |
+|------------|-----------|-------------|------|
+| sail/data-mixture-random-1b | `model-index-1` to `model-index-64` | 64 models with random data mixtures to study correlation between data mixture and downstream performance | [🤗 Hugging Face](https://huggingface.co/sail/data-mixture-random-1b) |
+| sail/data-mixture-human-1b | `seed-1` to `seed-5` | 5 models with human-selected data mixture (baseline), using different seeds | [🤗 Hugging Face](https://huggingface.co/sail/data-mixture-human-1b) |
+| sail/data-mixture-doremi-1b | `seed-1` to `seed-5` | 5 models with DoReMi best-performing data mixture (baseline), using different seeds | [🤗 Hugging Face](https://huggingface.co/sail/data-mixture-doremi-1b) |
+| sail/data-mixture-pile-cc-1b | `seed-1` to `seed-5` | 5 models with Pile-CC only data mixture, using different seeds | [🤗 HuggingFace](https://huggingface.co/sail/data-mixture-pile-cc-1b) |
+| sail/data-mixture-regmix-1b | `seed-1` to `seed-5` | 5 models with RegMix data mixture, using different seeds | [🤗 HuggingFace](https://huggingface.co/sail/data-mixture-regmix-1b) |
+
+### Data
+
+We also provide both the full data and the sample data for your reference on HuggingFace. You can download them manually or use the following code to download them:
+
+```python
+from huggingface_hub import snapshot_download
+
+# You can choose to download regmix-data, or regmix-data-sample
+snapshot_download(repo_id="sail/regmix-data-sample", 
+                  repo_type='dataset',
+                  local_dir="sail/regmix-data-sample",
+                  local_dir_use_symlinks=False)
+```
+
+Some of the details about these two datasets are as follows:
+
+| Dataset Name | Description | Size | Link |
+|--------------|-------------|------|------|
+| sail/regmix-data | Full dataset for RegMix, resplitted from [pile-uncopyrighted](https://huggingface.co/datasets/monology/pile-uncopyrighted) | 250B tokens (~1TB disk space) | [🤗 Hugging Face](https://huggingface.co/datasets/sail/regmix-data) |
+| sail/regmix-data-sample | Sample dataset from regmix-data, we keep one file for each domain | 5B tokens (~20GB disk space) | [🤗 Hugging Face](https://huggingface.co/datasets/sail/regmix-data-sample) |
 
 ## 🔍 Evaluation [Work in Progress]
 
