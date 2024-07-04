@@ -4,7 +4,7 @@ Welcome to the official repository of [RegMix](https://huggingface.co/papers/240
 
 ## 🌟 What is RegMix?
 
-RegMix is an innovative method that treats data mixture selection as a **regression task**. By training small "proxy" models on diverse data mixtures and analyzing their performance, RegMix builds a regression model that can predict the optimal data mixture for training large-scale LLMs.
+RegMix is a novel method that treats data mixture selection as a **regression task**. By training small "proxy" models on diverse data mixtures and analyzing their performance, RegMix builds a regression model that can predict the optimal data mixture for training large-scale LLMs.
 
 ![RegMix Method Visualization](misc/method_figure.png)
 
