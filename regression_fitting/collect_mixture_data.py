@@ -2,6 +2,7 @@ import pandas as pd
 from copy import copy
 import yaml
 import os
+import argparse
 
 def read_config(config_file):
     # read the yaml config
@@ -46,4 +47,12 @@ def gather_mixture_data(write_file_path, config_folder):
     df.to_csv(write_file_path)
 
 if __name__ == "__main__":
-    gather_mixture_data("train_mixture_1m.csv", "../mixture_config/config_1m")
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--write_file_path", type=str, default="train_mixture_1m.csv")
+    parser.add_argument("--config_folder", type=str, default="../mixture_config/config_1m")
+    
+    args = parser.parse_args()
+    write_file_path = args.write_file_path
+    config_folder = args.config_folder
+    
+    gather_mixture_data(write_file_path, config_folder)
