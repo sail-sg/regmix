@@ -4,6 +4,7 @@ from tqdm import tqdm
 import yaml
 import os
 from copy import copy
+import argparse
 
 # find your API key at https://wandb.ai/authorize
 WANDB_API_KEY = "YOUR_API_KEY"
@@ -78,4 +79,9 @@ def export_wandb_runs(write_file_path, enable_empty_row=False):
 
 
 if __name__ == "__main__":
-    export_wandb_runs("train_pile_loss_1m.csv", enable_empty_row=False)
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--write_file_path", type=str, default="train_pile_loss_1m.csv")
+
+    args = parser.parse_args()
+    write_file_path = args.write_file_path
+    export_wandb_runs(write_file_path, enable_empty_row=False)
