@@ -247,14 +247,11 @@ Stay tuned! We're currently working on providing comprehensive evaluation setup 
 If RegMix helps your research, please cite our paper:
 
 ```bibtex
-@misc{liu2024regmix,
-      title={RegMix: Data Mixture as Regression for Language Model Pre-training}, 
-      author={Qian Liu and Xiaosen Zheng and Niklas Muennighoff and Guangtao Zeng and Longxu Dou and Tianyu Pang and Jing Jiang and Min Lin},
-      year={2024},
-      eprint={2407.01492},
-      archivePrefix={arXiv},
-      primaryClass={cs.CL},
-      url={https://arxiv.org/abs/2407.01492}, 
+@article{liu2024regmix,
+  title={RegMix: Data Mixture as Regression for Language Model Pre-training},
+  author={Liu, Qian and Zheng, Xiaosen and Muennighoff, Niklas and Zeng, Guangtao and Dou, Longxu and Pang, Tianyu and Jiang, Jing and Lin, Min},
+  journal={arXiv preprint arXiv:2407.01492},
+  year={2024}
 }
 ```
 
