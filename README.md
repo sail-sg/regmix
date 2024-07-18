@@ -49,19 +49,19 @@ An example dataset organization folder structure is as follows:
 
 ```
 ├── train
-│   ├── domain1_0.jsonl
-│   ├── domain1_1.jsonl
+│   ├── domain1-0.jsonl
+│   ├── domain1-1.jsonl
 │   ├── ...
-│   ├── domain2_0.jsonl
-│   ├── domain2_1.jsonl
+│   ├── domain2-0.jsonl
+│   ├── domain2-1.jsonl
 │   ├── ...
 ├── valid
-│   ├── domain1_0.jsonl
-│   ├── domain2_0.jsonl
+│   ├── domain1-0.jsonl
+│   ├── domain2-0.jsonl
 ```
 
 > [!TIP]
-> We use prefix based matching to identify files from the same domain. Therefore, please make sure the prefix is unique for each domain. And we recommend using the `_` after the prefix to avoid one prefix becoming a substring of another prefix.
+> We use prefix based matching to identify files from the same domain. Therefore, please make sure the prefix is unique for each domain. And we recommend using the `-` after the prefix to avoid one prefix becoming a substring of another prefix.
 > Please avoid making each jsonl file too large, as it may cause long time during the preprocessing.
 
 You can also find the [regmix-data-sample](https://huggingface.co/datasets/sail/regmix-data-sample) for your reference.
