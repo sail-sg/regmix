@@ -60,8 +60,8 @@ An example dataset organization folder structure is as follows:
 │   ├── domain2-0.jsonl
 ```
 
-> [!TIP]
-> We use prefix based matching to identify files from the same domain. Therefore, please make sure the prefix is unique for each domain. And we recommend using the `-` after the prefix to avoid one prefix becoming a substring of another prefix.
+> [!CAUTION]
+> We use prefix based matching to identify files from the same domain. Therefore, please make sure the prefix is unique for each domain. And please make sure to use the `-` after the prefix to avoid one prefix becoming a substring of another prefix. Our [training code](https://github.com/sail-sg/regmix/blob/e0c0357a312dbb3d62e3aa58a13cf42dd3ef42ee/model_training/pretrain/tinyllama.py#L464) will by default use `-` to make sure that we load the correct domain files!
 > Please avoid making each jsonl file too large, as it may cause long time during the preprocessing.
 
 You can also find the [regmix-data-sample](https://huggingface.co/datasets/sail/regmix-data-sample) for your reference.
