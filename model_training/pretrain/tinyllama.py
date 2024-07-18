@@ -461,7 +461,7 @@ def create_train_dataloader(
     # check the validness
     for idx in range(len(data_config) - 1, -1, -1):
         prefix = data_config[idx][0]
-        filenames = sorted(glob.glob(str(data_dir / f"{prefix}_*")))        
+        filenames = sorted(glob.glob(str(data_dir / f"{prefix}*")))        
         if len(filenames) < total_devices:
             fabric.print("skip dataset {}".format(prefix))
             del data_config[idx]
@@ -469,7 +469,7 @@ def create_train_dataloader(
 
     for idx in range(len(data_config)):
         prefix = data_config[idx][0]
-        filenames = sorted(glob.glob(str(data_dir / f"{prefix}_*")))
+        filenames = sorted(glob.glob(str(data_dir / f"{prefix}*")))
         random.seed(seed)
         random.shuffle(filenames)
         fabric.print("create dataset {}".format(prefix))
@@ -512,7 +512,7 @@ def create_val_dataloader(
         data_config = val_data_config[idx]
         delete_val_flag = False
         for prefix, _ in data_config:
-            filenames = sorted(glob.glob(str(data_dir / f"{prefix}_*")))
+            filenames = sorted(glob.glob(str(data_dir / f"{prefix}*")))
             if len(filenames) < total_devices:
                 fabric.print("skip val dataset {}".format(prefix))
                 delete_val_flag = True
@@ -524,7 +524,7 @@ def create_val_dataloader(
     for data_config in val_data_config:
         datasets = []
         for prefix, _ in data_config:
-            filenames = sorted(glob.glob(str(data_dir / f"{prefix}_*")))
+            filenames = sorted(glob.glob(str(data_dir / f"{prefix}*")))
             random.seed(seed)
             random.shuffle(filenames)
 
