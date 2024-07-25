@@ -8,6 +8,7 @@ from safetensors import safe_open
 from safetensors.torch import save_file
 import os
 import torch
+import json
 
 # support running without installing as a package
 wd = Path(__file__).parent.parent.resolve()
@@ -35,90 +36,6 @@ def load_param(param: Union[torch.Tensor, NotYetLoadedTensor], name: str, dtype:
         print(f"Converting {name!r} from {param.dtype} to {dtype}")
         param = param.to(dtype)
     return param
-
-def copy_weights_falcon(
-    size: Literal["7b", "40b"],
-    state_dict: Dict[str, torch.Tensor],
-    lit_weights: Dict[str, Union[torch.Tensor, NotYetLoadedTensor]],
-    saver: Optional[incremental_save] = None,
-):
-    weight_map = {
-        "transformer.wte.weight": "transformer.word_embeddings.weight",
-        "transformer.h.{}.attn.attn.weight": "transformer.h.{}.self_attention.query_key_value.weight",
-        "transformer.h.{}.attn.proj.weight": "transformer.h.{}.self_attention.dense.weight",
-        "transformer.h.{}.mlp.fc.weight": "transformer.h.{}.mlp.dense_h_to_4h.weight",
-        "transformer.h.{}.mlp.proj.weight": "transformer.h.{}.mlp.dense_4h_to_h.weight",
-        "transformer.ln_f.bias": "transformer.ln_f.bias",
-        "transformer.ln_f.weight": "transformer.ln_f.weight",
-        "lm_head.weight": "lm_head.weight",
-    }
-    # the original model definition is different for each size
-    if size == "7b":
-        weight_map.update(
-            {
-                "transformer.h.{}.norm_1.bias": "transformer.h.{}.input_layernorm.bias",
-                "transformer.h.{}.norm_1.weight": "transformer.h.{}.input_layernorm.weight",
-            }
-        )
-    elif size == "40b":
-        weight_map.update(
-            {
-                "transformer.h.{}.norm_1.bias": "transformer.h.{}.ln_attn.bias",
-                "transformer.h.{}.norm_1.weight": "transformer.h.{}.ln_attn.weight",
-                "transformer.h.{}.norm_2.bias": "transformer.h.{}.ln_mlp.bias",
-                "transformer.h.{}.norm_2.weight": "transformer.h.{}.ln_mlp.weight",
-            }
-        )
-    else:
-        raise NotImplementedError
-
-    for name, param in lit_weights.items():
-        if "transformer.h" in name:
-            from_name, number = layer_template(name, 2)
-            to_name = weight_map[from_name].format(number)
-        else:
-            to_name = weight_map[name]
-        param = load_param(param, name, None)
-        if saver is not None:
-            param = saver.store_early(param)
-        state_dict[to_name] = param
-
-
-def copy_weights_gpt_neox(
-    state_dict: Dict[str, torch.Tensor],
-    lit_weights: Dict[str, Union[torch.Tensor, NotYetLoadedTensor]],
-    saver: Optional[incremental_save] = None,
-) -> None:
-    weight_map = {
-        "transformer.wte.weight": "gpt_neox.embed_in.weight",
-        "transformer.h.{}.norm_1.bias": "gpt_neox.layers.{}.input_layernorm.bias",
-        "transformer.h.{}.norm_1.weight": "gpt_neox.layers.{}.input_layernorm.weight",
-        "transformer.h.{}.attn.attn.bias": "gpt_neox.layers.{}.attention.query_key_value.bias",
-        "transformer.h.{}.attn.attn.weight": "gpt_neox.layers.{}.attention.query_key_value.weight",
-        "transformer.h.{}.attn.proj.bias": "gpt_neox.layers.{}.attention.dense.bias",
-        "transformer.h.{}.attn.proj.weight": "gpt_neox.layers.{}.attention.dense.weight",
-        "transformer.h.{}.norm_2.bias": "gpt_neox.layers.{}.post_attention_layernorm.bias",
-        "transformer.h.{}.norm_2.weight": "gpt_neox.layers.{}.post_attention_layernorm.weight",
-        "transformer.h.{}.mlp.fc.bias": "gpt_neox.layers.{}.mlp.dense_h_to_4h.bias",
-        "transformer.h.{}.mlp.fc.weight": "gpt_neox.layers.{}.mlp.dense_h_to_4h.weight",
-        "transformer.h.{}.mlp.proj.bias": "gpt_neox.layers.{}.mlp.dense_4h_to_h.bias",
-        "transformer.h.{}.mlp.proj.weight": "gpt_neox.layers.{}.mlp.dense_4h_to_h.weight",
-        "transformer.ln_f.bias": "gpt_neox.final_layer_norm.bias",
-        "transformer.ln_f.weight": "gpt_neox.final_layer_norm.weight",
-        "lm_head.weight": "embed_out.weight",
-    }
-
-    for name, param in lit_weights.items():
-        if "transformer.h" in name:
-            from_name, number = layer_template(name, 2)
-            to_name = weight_map[from_name].format(number)
-        else:
-            to_name = weight_map[name]
-        param = load_param(param, name, None)
-        if saver is not None:
-            param = saver.store_early(param)
-        state_dict[to_name] = param
-
 
 def copy_weights_llama(
     config: Config,
@@ -168,68 +85,44 @@ def copy_weights_llama(
                 param = saver.store_early(param)
             state_dict[to_name] = param
 
-
-def copy_weights_qwen(
-    config: Config,
-    state_dict: Dict[str, torch.Tensor],
-    lit_weights: Dict[str, Union[torch.Tensor, NotYetLoadedTensor]],
-    saver: Optional[incremental_save] = None,
-):
-    weight_map = {
-        "transformer.wte.weight": "model.embed_tokens.weight",
-        "transformer.h.{}.norm_1.weight": "model.layers.{}.input_layernorm.weight",
-        "transformer.h.{}.attn.proj.weight": "model.layers.{}.self_attn.o_proj.weight",
-        "transformer.h.{}.norm_2.weight": "model.layers.{}.post_attention_layernorm.weight",
-        "transformer.h.{}.mlp.swiglu.w1.weight": "model.layers.{}.mlp.gate_proj.weight",
-        "transformer.h.{}.mlp.swiglu.w2.weight": "model.layers.{}.mlp.up_proj.weight",
-        "transformer.h.{}.mlp.swiglu.w3.weight": "model.layers.{}.mlp.down_proj.weight",
-        "transformer.ln_f.weight": "model.norm.weight",
-        "lm_head.weight": "lm_head.weight",
-    }
-    for name, param in lit_weights.items():
-        if name.endswith(".attn.attn.weight"):
-            from_name, number = layer_template(name, 2)
-            q = "model.layers.{}.self_attn.q_proj.weight".format(number)
-            k = "model.layers.{}.self_attn.k_proj.weight".format(number)
-            v = "model.layers.{}.self_attn.v_proj.weight".format(number)
-            qkv = load_param(param, name, None)
-            qp, kp, vp = tensor_split(qkv, config)
-            for to_name, param in zip((q, k, v), (qp, kp, vp)):
-                if saver is not None:
-                    param = saver.store_early(param)
-                state_dict[to_name] = param
-        elif name.endswith(".attn.attn.bias"):
-            from_name, number = layer_template(name, 2)
-            q = "model.layers.{}.self_attn.q_proj.bias".format(number)
-            k = "model.layers.{}.self_attn.k_proj.bias".format(number)
-            v = "model.layers.{}.self_attn.v_proj.bias".format(number)
-            qkv = load_param(param, name, None)
-            print(qkv.shape)
-            # reshape as 3072, 1
-            qkv = qkv.view(-1, 1)
-            qp, kp, vp = tensor_split(qkv, config)
-            for to_name, param in zip((q, k, v), (qp, kp, vp)):
-                if saver is not None:
-                    param = saver.store_early(param)
-                state_dict[to_name] = param.view(-1)
-        elif "transformer.h" in name:
-            from_name, number = layer_template(name, 2)
-            to_name = weight_map[from_name]
-            
-            if to_name is None:
-                continue
-            to_name = to_name.format(number)
-            param = load_param(param, name,None)
-            if saver is not None:
-                param = saver.store_early(param)
-            state_dict[to_name] = param
-
-        else:
-            to_name = weight_map[name]
-            param = load_param(param, name, None)
-            if saver is not None:
-                param = saver.store_early(param)
-            state_dict[to_name] = param
+def save_huggingface_config(config: Config, out_dir: Path) -> None:
+    default_config_str = """{
+  "architectures": [
+    "LlamaForCausalLM"
+  ],
+  "attention_bias": false,
+  "bos_token_id": 1,
+  "eos_token_id": 2,
+  "hidden_act": "silu",
+  "hidden_size": 2048,
+  "initializer_range": 0.02,
+  "intermediate_size": 5632,
+  "max_position_embeddings": 2048,
+  "model_type": "llama",
+  "num_attention_heads": 16,
+  "num_hidden_layers": 22,
+  "rms_norm_eps": 1e-05,
+  "rope_scaling": null,
+  "rope_theta": 10000.0,
+  "tie_word_embeddings": false,
+  "torch_dtype": "bfloat16",
+  "transformers_version": "4.35.0",
+  "use_cache": true,
+  "vocab_size": 50432
+}
+"""
+    config_dict = json.loads(default_config_str)
+    # modify the dict according to the config
+    config_dict["hidden_size"] = config.n_embd
+    config_dict["intermediate_size"] = config.intermediate_size
+    config_dict["vocab_size"] = config.vocab_size
+    config_dict["num_attention_heads"] = config.n_head
+    config_dict["num_hidden_layers"] = config.n_layer
+    config_dict["max_position_embeddings"] = config.block_size
+    config_dict["rope_theta"] = config.rope_base
+    # save the config to the output directory
+    with open(out_dir / "config.json", "w") as f:
+        json.dump(config_dict, f, indent=4, ensure_ascii=False)
 
 
 def tensor_split(
@@ -297,15 +190,7 @@ def check_conversion_supported(lit_weights: Dict[str, torch.Tensor]) -> None:
 @torch.inference_mode()
 def convert_lit_checkpoint(*, checkpoint_name: str, inp_dir: Path, out_dir: Path, model_name: str) -> None:
     config = Config.from_name(model_name)
-
-    if "falcon" in model_name:
-        copy_fn = partial(copy_weights_falcon, "40b" if config.n_embd == 8192 else "7b")
-    elif "qwen" in model_name:
-        copy_fn = partial(copy_weights_qwen, config)
-    elif config._mlp_class == "LLaMAMLP":
-        copy_fn = partial(copy_weights_llama, config)
-    else:
-        copy_fn = copy_weights_gpt_neox
+    copy_fn = partial(copy_weights_llama, config)
 
     # initialize a new empty state dict to hold our new weights
     sd = {}
@@ -323,15 +208,13 @@ def convert_lit_checkpoint(*, checkpoint_name: str, inp_dir: Path, out_dir: Path
             # Incremental save will trigger error
             copy_fn(sd, lit_weights, saver=None)
             gc.collect()
-        # saver.save(sd)
-        # remove the original checkpoint
+        # if there is any, remove the original checkpoint
         os.remove(bin_file)
         print(f"Saving model to {bin_file}")
         # use safe tensor to save the model
         save_file(sd, bin_file, metadata={"format": "pt"})
-        # check if the model can be opened
-        with safe_open(bin_file, framework="pt") as f:
-            metadata = f.metadata()
+        # save the config
+        save_huggingface_config(config, out_dir)
 
 if __name__ == "__main__":
     from jsonargparse import CLI
