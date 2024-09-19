@@ -1,6 +1,6 @@
 export DATASET_SHORT_NAME="the_pile"
 
-python download_data.py --dataset_name sail/regmix-data-sample
+python download_dataset.py --dataset_name sail/regmix-data-sample
 # WARNING: you can choose to download the full dataset (around 1TB) by running the following command
 # python download_data.py --dataset_name sail/regmix-data
 
